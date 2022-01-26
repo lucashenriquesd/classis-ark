@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+
+  node:
+    container_name: classis-node
+    build:
+      context: ./
+      dockerfile: node.Dockerfile
+    tty: true
+    ports:
+      - "3004:3000"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - classis-network
+
+networks:
+  classis-network:
+    driver: bridge
