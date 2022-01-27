@@ -15,6 +15,38 @@ services:
     networks:
       - classis-network
 
+  nginx-apigateway:
+    container_name: classis-nginx-apigateway
+    build:
+      context: ./
+      dockerfile: nginx-apigateway.Dockerfile
+    tty: true
+    ports:
+      - "8000:80"
+      - "4043:443"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+      - ./nginx-apigateway-default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - classis-network
+    depends_on:
+      - php-apigateway
+
+  php-apigateway:
+    container_name: classis-php-apigateway
+    build:
+      context: ./
+      dockerfile: php-apigateway.Dockerfile
+    tty: true
+    ports:
+      - "9000:9000"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - classis-network
+
 networks:
   classis-network:
     driver: bridge
