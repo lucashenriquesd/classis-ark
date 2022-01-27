@@ -46,6 +46,28 @@ services:
       - ./:/usr/src/app
     networks:
       - classis-network
+    depends_on:
+      - mariadb-apigateway
+
+  mariadb-apigateway:
+    container_name: classis-mariadb-apigateway
+    build: 
+      context: ./
+      dockerfile: mariadb.Dockerfile
+    tty: true
+    # user: "1000:50"
+    ports:
+      - "3309:3306"
+    working_dir: /var/lib/mysql
+    environment:
+      MYSQL_DATABASE: classis-apigateway
+      MYSQL_ROOT_PASSWORD: classis-apigateway
+      # MYSQL_ROOT_HOST: '%'
+    volumes:
+      - ./data/classis-apigateway-laravel:/var/lib/mysql/
+      # - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - classis-network
 
 networks:
   classis-network:
