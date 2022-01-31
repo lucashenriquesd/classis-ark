@@ -1,14 +1,28 @@
 version: '3.8'
 services:
 
-  node:
-    container_name: classis-node
+  node-nuxt:
+    container_name: classis-node-nuxt
     build:
       context: ./
-      dockerfile: node.Dockerfile
+      dockerfile: node-nuxt.Dockerfile
     tty: true
     ports:
       - "3004:3000"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - classis-network
+
+  node-nest:
+    container_name: classis-node-nest
+    build:
+      context: ./
+      dockerfile: node-nest.Dockerfile
+    tty: true
+    ports:
+      - "3005:3000"
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
@@ -47,25 +61,20 @@ services:
     networks:
       - classis-network
     depends_on:
-      - mariadb-apigateway
+      - postgres-apigateway
 
-  mariadb-apigateway:
-    container_name: classis-mariadb-apigateway
+  postgres-apigateway:
+    container_name: classis-postgres-apigateway
     build: 
       context: ./
-      dockerfile: mariadb.Dockerfile
+      dockerfile: postgres.Dockerfile
     tty: true
-    # user: "1000:50"
     ports:
-      - "3309:3306"
-    working_dir: /var/lib/mysql
+      - "5433:5432"
     environment:
-      MYSQL_DATABASE: classis-apigateway
-      MYSQL_ROOT_PASSWORD: classis-apigateway
-      # MYSQL_ROOT_HOST: '%'
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./data/classis-apigateway-laravel:/var/lib/mysql/
-      # - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./data/classis-apigateway:/var/lib/postgresql/data
     networks:
       - classis-network
 
