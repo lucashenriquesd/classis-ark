@@ -15,8 +15,8 @@ services:
     networks:
       - classis-network
 
-  node-nest:
-    container_name: classis-node-nest
+  node-nest-apigateway:
+    container_name: classis-node-nest-apigateway
     build:
       context: ./
       dockerfile: node-nest.Dockerfile
@@ -24,6 +24,21 @@ services:
     ports:
       - "3005:3000"
       - "9229:9229"
+    working_dir: /usr/src/app
+    volumes:
+      - ./:/usr/src/app
+    networks:
+      - classis-network
+
+  node-nest-quiz:
+    container_name: classis-node-nest-quiz
+    build:
+      context: ./
+      dockerfile: node-nest.Dockerfile
+    tty: true
+    ports:
+      - "3006:3000"
+      - "9230:9229"
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
@@ -54,8 +69,6 @@ services:
       context: ./
       dockerfile: php-apigateway.Dockerfile
     tty: true
-    ports:
-      - "9000:9000"
     working_dir: /usr/src/app
     volumes:
       - ./:/usr/src/app
@@ -76,6 +89,22 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./data/classis-apigateway:/var/lib/postgresql/data
+    networks:
+      - classis-network
+
+  mongodb-quiz:
+    container_name: classis-mongodb-quiz
+    build: 
+      context: ./
+      dockerfile: mongodb.Dockerfile
+    tty: true
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    volumes:
+      - ./data/classis-mongodb-quiz:/data/db
     networks:
       - classis-network
 
